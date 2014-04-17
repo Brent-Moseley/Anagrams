@@ -4,9 +4,6 @@
 // Initialize some useful stuff:
 var fs = require('fs');    // Node file IO lib, http://nodejs.org/api/fs.html
 var word = process.argv[2];
-//var perm = new Object();
-// perm.permArr = [];
-// perm.usedChars = [];   // Used in recursive permute routine below.
 
 fs.readFile('/usr/share/dict/words', 'utf8', function (err,data) {
   if (err) {
@@ -27,20 +24,23 @@ function show_anagrams (word, hash) {
   for (var k = 0; k < hash.length; k++) {    
   	if (can_make(hash[k], word) && word != hash[k] && hash[k] != '') {
       // This key can be made, display it as one possible.
-      report (hash[k]);
+      report_word (hash[k]);
       word_count++;
     }
   }
 
-  console.log ("Total words: " + word_count.toString());
+  report_total (word_count.toString());
   return;
 }
 
 
-function report (word) {
+function report_word (word) {
   console.log ("Word found: " + word);
 }
 
+function report_total (total) {
+  console.log ("Total words: " + total);
+}
 
 function can_make (key, word) {
   var pos;
