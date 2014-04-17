@@ -8,73 +8,57 @@ var word = process.argv[2];
 // perm.permArr = [];
 // perm.usedChars = [];   // Used in recursive permute routine below.
 
-// Read in the weather data file, calculating results when read. 
 fs.readFile('/usr/share/dict/words', 'utf8', function (err,data) {
   if (err) {
     return console.log(err);
   }
-  var ALL_WORDS;
-  ALL_WORDS = data;
+  var ALL_WORDS = data;
   var hash = new Object();
 
-  make_array (ALL_WORDS, hash);
+  hash = make_array (ALL_WORDS);
   show_anagrams (word, hash);
   return;
 });
 
 
 function show_anagrams (word, hash) {
-  // Attempt to do a lookup of each letter combination in the total words hash
-  for (var k in hash) {
-  	if (can_make(k, word)) console.log (k);
+  // Compare the word with each key in the hash to see if we could make that key from the letters in word.
+  var word_count = 0;
+  for (var k = 0; k < hash.length; k++) {    
+  	if (can_make(hash[k], word) && word != hash[k] && hash[k] != '') {
+      // This key can be made, display it as one possible.
+      report (hash[k]);
+      word_count++;
+    }
   }
-  // for (var i = 0; i < perm.permArr.length; i++) {
-  // 	if (hash.hasOwnProperty(perm.permArr[i])) console.log ("+" + perm.permArr[i]);
-  // }
 
+  console.log ("Total words: " + word_count.toString());
   return;
+}
+
+
+function report (word) {
+  console.log ("Word found: " + word);
 }
 
 
 function can_make (key, word) {
-  // Make hash of letters in word
-  console.log ("key and word:" + key + '.' + word);
   var pos;
-  var deconstruct = word, temp;
-  for (var i = 0; i < key.length; i++) {
-  	console.log ("Looking for letter: " + )
-  	pos = word.indexOf(key[i]);
-  	if (pos == -1) return false;   // a letter was missing, could not make word
-  	temp = deconstruct.slice(0, pos-1) + deconstruct.slice(pos+1);
-  	deconstruct = temp
-  	console.log ("word reduced to: " + temp);
+  
+  // Make an array of all letters in word, as well as key
+  var letters = word.split('');
+  var word_array = key.split('');
+  for (var i = 0; i < word_array.length; i++) {
+    // Attempt to find current letter in letters
+  	pos = letters.indexOf(word_array[i]);
+  	if (pos == -1) return false;   // a letter was missing, could not make key
+  	letters.splice(pos, 1);        // remove the used letter
   }
-  return;
+  // Completed word_array, key successfully created.
+  return true;
 }
 
-// produce all combinations letters in input, returning array
-// function permute(input) {
-//   var i, ch, chars = input.split("");
-//   for (i = 0; i < chars.length; i++) {
-//     ch = chars.splice(i, 1);
-//     perm.usedChars.push(ch);
-//     if (chars.length == 0) { 
-//       perm.permArr[perm.permArr.length] = perm.usedChars.join("");
-//     }  
-//     permute(chars.join(""));
-//     chars.splice(i, 0, ch);
-//     perm.usedChars.pop();
-//   }
-//   return perm.permArr
-// };
 
-
-
-
-function make_array (data, hash) {
-  var separate = data.split('\n');
-  for (var i = 0; i < separate.length; i++) {
-  	hash[separate[i]] = '.';
-  }
-  return;
+function make_array (data) {
+  return data.split('\n');
 }
