@@ -1,5 +1,5 @@
 // Solution to Kata 8, part I:  http://codekata.com/kata/kata08-conflicting-objectives
-// Exercise version:  optimized for speed
+// Exercise version:  Combined both speed and readability considerations, with notes in the comments. 
 // Initialize some useful stuff:
 var fs = require('fs');    // Node file IO lib, http://nodejs.org/api/fs.html
 var WORD_LIST = new Object();
@@ -21,13 +21,15 @@ fs.readFile('/usr/share/dict/words', 'utf8', function (err,data) {
 function find_combos () {
   // Go through each word that is of length six, trying all possible "split points".  For each split point,
   // determine if BOTH sides are a legitimate word. 
-  for (var k = 0; k < WORD_LIST.sixes.length; k++) {  
-    var len = WORD_LIST.sixes[k].length;
+  for (var wordNum = 0; wordNum < WORD_LIST.sixes.length; wordNum++) {  
+    var currentWord = WORD_LIST.sixes[wordNum];    // slight speed loss to create another var like this, but more readable.
+    var lengthCurrentWord = currentWord.length;
   	
-    for (var j = 0; j < len-1; j++) {
-      var left = WORD_LIST.sixes[k].substring(0, j+1);
-      var right = WORD_LIST.sixes[k].substring(j+1, len);
-      if (valid_words(left, right)) console.log (left + ' + ' + right + ' => ' + WORD_LIST.sixes[k]);  
+    // Try each possible split point in the current word, and check to see if BOTH sides are valid words.
+    for (var splitPoint = 0; splitPoint < lengthCurrentWord-1; splitPoint++) {
+      var leftPart = currentWord.substring(0, splitPoint+1);
+      var rightPart = currentWord.substring(splitPoint+1, lengthCurrentWord);
+      if (valid_words(leftPart, rightPart)) console.log (leftPart + ' + ' + rightPart + ' => ' + currentWord);  
     } 
 
   }
@@ -42,11 +44,14 @@ function valid_words (word1, word2) {
 }
 
 function valid (word) {
+  // Very simple linear search - very readable due to being such a basic algorithm.  But potentially very slow in searching
+  // for a word in a list of hundreds of thousands. 
   for (var i = 0; i < WORD_LIST.all.length; i++) {
     if (WORD_LIST.all[i] == word) return true;
   }
   return false;
-  // Additional speed refinement:  binary search.
+  // Additional speed refinement:  binary search.  This would do the search a LOT faster, but be less readable since
+  // it is a more complex algorithm. 
 }
 
 
